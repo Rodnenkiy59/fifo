@@ -25,9 +25,14 @@ module fifo_tb ();
         #100 rst_n = 1;
 
         #1000;
-        data_gen(data_in, write_en, clk, 5);
+        data_gen(5);
         #100;
         data_read(10);
+        #100;
+        fork
+            data_gen(15);
+            data_read(35);
+        join
         #100;
         $stop;
     end
@@ -47,17 +52,17 @@ module fifo_tb ();
         .full       ()
     );
 
-    task automatic data_gen(ref logic [7:0] data_in, ref logic write_en, ref logic clk, input int size);
-    begin
-        int i;
-        for (i=0;i<size;i=i+1) begin
-            @(posedge clk);
-            data_in = i;
-            write_en = 1;
+    task data_gen(input int size);
+        begin
+            int i;
+            for (i=0;i<size;i=i+1) begin
+                @(posedge clk);
+                data_in = i;
+                write_en = 1;
+            end
+            data_in = 0;
+            write_en = 0;
         end
-        data_in = 0;
-        write_en = 0;
-    end
     endtask
 
     task data_read(input int size);
