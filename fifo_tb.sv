@@ -1,7 +1,7 @@
 `timescale 1ps/1ps
 
 module fifo_tb ();
-    
+
     logic clk;
     logic rst_n;
 
@@ -40,7 +40,9 @@ module fifo_tb ();
         .write_en   (write_en),
 
         .data_out   (data_out),
-        .read_en    (read_en)
+        .read_en    (read_en),
+
+        .read_valid ()
     );
 
     task automatic data_gen(ref logic [7:0] data_in, ref logic write_en, ref logic clk, input int size);
@@ -49,10 +51,7 @@ module fifo_tb ();
         for (i=0;i<size;i=i+1) begin
             @(posedge clk);
             data_in = i;
-            write_en = 1;    
-            $display("write_en = %0d",write_en);
-            $display("data_in = %0d",data_in);
-            $display("size = %0d",size);
+            write_en = 1;
         end
         data_in = 0;
         write_en = 0;
@@ -67,7 +66,7 @@ module fifo_tb ();
                 read_en = 1;
             end
             read_en = 0;
-        end 
+        end
     endtask
 
 endmodule
