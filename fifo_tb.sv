@@ -1,4 +1,4 @@
-`timescale 1ps/1ps
+`timescale 10ps/1ps
 
 module fifo_tb ();
 
@@ -27,7 +27,7 @@ module fifo_tb ();
         #1000;
         data_gen(data_in, write_en, clk, 5);
         #100;
-        data_read(5);
+        data_read(10);
         #100;
         $stop;
     end
@@ -42,7 +42,9 @@ module fifo_tb ();
         .data_out   (data_out),
         .read_en    (read_en),
 
-        .read_valid ()
+        .read_valid (),
+        .empty      (),
+        .full       ()
     );
 
     task automatic data_gen(ref logic [7:0] data_in, ref logic write_en, ref logic clk, input int size);

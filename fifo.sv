@@ -7,13 +7,16 @@ module fifo (
 
     output logic [7:0]  data_out,
     input  logic        read_en,
-    output logic        read_valid
+    output logic        read_valid,
+
+    output logic        full,
+    output logic        empty
 );
 
-logic [7:0] wr_ptr;
-logic [7:0] rd_ptr;
+logic [8:0] wr_ptr;
+logic [8:0] rd_ptr;
 
-logic [7:0] mem [256:0];
+logic [7:0] mem [255:0];
 
 logic write_en_sig;
 logic read_en_sig;
@@ -54,13 +57,18 @@ always_ff @( posedge clk or negedge rst_n ) begin : MEM_RD
 end
 
 always_comb begin : WR_RD_SAME_TIME
-    if (read_en && write_en) begin
+    if (read_en && write_en && !full) begin
         write_en_sig = 1;
         read_en_sig  = 0;
     end else begin
-        write_en_sig = write_en;
-        read_en_sig  = read_en;
+        write_en_sig = write_en && !full;
+        read_en_sig  = read_en && !empty;
     end
+end
+
+always_comb begin : EMPTY_FULL_LOGIC
+    empty = (wr_ptr == rd_ptr) && (wr_ptr[8] == rd_ptr[8]);
+    full  = (wr_ptr == rd_ptr) && (wr_ptr[8] != rd_ptr[8]);
 end
 
 endmodule
